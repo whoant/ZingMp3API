@@ -33,7 +33,27 @@ class ZingMp3 {
 
             try {
                 const data = await this.requestZing(option);
-                if (data.err) reject(data.msg);
+                if (data.err) reject(data);
+                resolve(data);
+            } catch (error) {
+                reject(error);
+            }
+        })
+    }
+    getSongInfo(id) {
+        return new Promise(async (resolve, reject) => {
+
+            const option = {
+                nameAPI: '/song/get-song-info',
+                qs: {
+                    id
+                },
+                param: 'id=' + id
+            };
+
+            try {
+                const data = await this.requestZing(option);
+                if (data.err) reject(data);
                 resolve(data);
             } catch (error) {
                 reject(error);
@@ -55,7 +75,7 @@ class ZingMp3 {
 
             try {
                 const data = await this.requestZing(option);
-                if (data.err) reject(data.msg);
+                if (data.err) reject(data);
                 const resuft = Object.values(data.data.default).map(item => `https:${item}`);
                 resolve(resuft);
             } catch (error) {
