@@ -3,11 +3,15 @@ const encrypt = require('./encrypt');
 
 const API_KEY = '38e8643fb0dc04e8d65b99994d3dafff';
 const SERCRET_KEY = '10a01dcf33762d3a204cb96429918ff6';
+const URL_API = [
+    'https://zingmp3.vn/api',
+    'https://beta.zingmp3.vn'
+];
 
 request = request.defaults({
-    baseUrl: 'https://zingmp3.vn/api',
     qs: {
-        api_key: API_KEY
+        api_key: API_KEY,
+        apiKey: API_KEY
     },
     gzip: true,
     json: true
@@ -15,11 +19,15 @@ request = request.defaults({
 
 class ZingMp3 {
 
+    constructor(){
+        this.time = null;
+    }
 
     static getInfoDetail(id) {
         return new Promise(async (resolve, reject) => {
             const option = {
                 nameAPI: '/song/get-song-detail',
+                typeApi: 0,
                 qs: {
                     id
                 },
@@ -27,7 +35,7 @@ class ZingMp3 {
             };
 
             try {
-                const data = await ZingMp3.requestZing(option);
+                const data = await this.requestZing(option);
                 if (data.err) reject(data);
                 resolve(data);
             } catch (error) {
@@ -41,6 +49,7 @@ class ZingMp3 {
 
             const option = {
                 nameAPI: '/song/get-song-info',
+                typeApi: 0,
                 qs: {
                     id
                 },
@@ -48,7 +57,7 @@ class ZingMp3 {
             };
 
             try {
-                const data = await ZingMp3.requestZing(option);
+                const data = await this.requestZing(option);
                 if (data.err) reject(data);
                 resolve(data);
             } catch (error) {
@@ -57,11 +66,34 @@ class ZingMp3 {
         })
     }
 
-    static requestZing({nameAPI, param, qs})
+    static getStreaming(id) {
+        return new Promise(async (resolve, reject) => {
+
+            const option = {
+                nameAPI: '/api/v2/song/getStreaming',
+                typeApi: 1,
+                qs: {
+                    id
+                },
+                param: 'id=' + id
+            };
+
+            try {
+                const data = await this.requestZing(option);
+                if (data.err) reject(data);
+                resolve(data);
+            } catch (error) {
+                reject(error);
+            }
+        })
+    }
+
+    static requestZing({nameAPI, typeApi, param, qs})
     {
+        
         let sig = this.hashParam(nameAPI, param);
         return request({
-            uri: nameAPI,
+            uri: URL_API[typeApi] + nameAPI,
             qs: {
                 ctime: this.time,
                 sig,

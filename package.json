@@ -1,12 +1,12 @@
 {
   "name": "zingmp3",
   "version": "1.0.0",
-  "description": "",
+  "description": "ZingMp3 API",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "whoant <vovanhoangtuan4.2@gmail.com>",
   "license": "ISC",
   "dependencies": {
     "request": "^2.88.2",
