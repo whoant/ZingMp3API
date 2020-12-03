@@ -19,8 +19,24 @@ request = request.defaults({
 
 class ZingMp3 {
 
-    constructor(){
-        this.time = null;
+    static getFullInfo(id){
+        return new Promise(async(resolve, reject) => {
+            try {
+                const data = await Promise.all([this.getSongInfo(id), this.getStreaming(id)]);
+                const infoSong = data[0].data;
+                let res = {
+                    id,
+                    title: infoSong.title,
+                    artists_names: infoSong.artists_names,
+                    thumbnail: infoSong.thumbnail_medium,
+                    lyric: infoSong.lyric,
+                    streaming: data[1].data
+                };
+                resolve(res);
+            } catch (error) {
+                reject(error);
+            }
+        });
     }
 
     static getInfoDetail(id) {

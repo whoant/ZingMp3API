@@ -1,5 +1,7 @@
 const Zing = require('./modules/ZingMp3');
 
-Zing.getInfoDetail('ZO00E6FO')
+const id = 'ZO00E6FO';
+
+Zing.getFullInfo(id)
     .then(data => console.log(data))
     .catch(err => console.log(err));
