@@ -4,7 +4,6 @@ const encrypt = require('./encrypt');
 const API_KEY = '38e8643fb0dc04e8d65b99994d3dafff';
 const SERCRET_KEY = '10a01dcf33762d3a204cb96429918ff6';
 
-
 request = request.defaults({
     baseUrl: 'https://zingmp3.vn/api',
     qs: {
@@ -16,13 +15,9 @@ request = request.defaults({
 
 class ZingMp3 {
 
-    constructor(){
-        
-    }
 
-    getInfoDetail(id) {
+    static getInfoDetail(id) {
         return new Promise(async (resolve, reject) => {
-
             const option = {
                 nameAPI: '/song/get-song-detail',
                 qs: {
@@ -32,7 +27,7 @@ class ZingMp3 {
             };
 
             try {
-                const data = await this.requestZing(option);
+                const data = await ZingMp3.requestZing(option);
                 if (data.err) reject(data);
                 resolve(data);
             } catch (error) {
@@ -40,7 +35,8 @@ class ZingMp3 {
             }
         })
     }
-    getSongInfo(id) {
+
+    static getSongInfo(id) {
         return new Promise(async (resolve, reject) => {
 
             const option = {
@@ -52,7 +48,7 @@ class ZingMp3 {
             };
 
             try {
-                const data = await this.requestZing(option);
+                const data = await ZingMp3.requestZing(option);
                 if (data.err) reject(data);
                 resolve(data);
             } catch (error) {
@@ -61,30 +57,7 @@ class ZingMp3 {
         })
     }
 
-
-    getStreaming(id) {
-
-        return new Promise(async (resolve, reject) => {
-            const option = {
-                nameAPI: '/song/get-streamings',
-                qs: {
-                    id
-                },
-                param: 'id=' + id
-            };
-
-            try {
-                const data = await this.requestZing(option);
-                if (data.err) reject(data);
-                const resuft = Object.values(data.data.default).map(item => `https:${item}`);
-                resolve(resuft);
-            } catch (error) {
-                reject(error);
-            }
-        })
-    }
-
-    requestZing({nameAPI, param, qs})
+    static requestZing({nameAPI, param, qs})
     {
         let sig = this.hashParam(nameAPI, param);
         return request({
@@ -97,7 +70,7 @@ class ZingMp3 {
         });
     }
 
-    hashParam(nameAPI, param = '')
+    static hashParam(nameAPI, param = '')
     {
         this.time = Math.floor(Date.now() / 1000);
         const hash256 = encrypt.getHash256(`ctime=${this.time}${param}`);
