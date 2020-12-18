@@ -1,4 +1,5 @@
-let request = require('request-promise');
+let request = require("request-promise");
+const tough = require('tough-cookie');
 const encrypt = require('./encrypt');
 
 const API_KEY = '38e8643fb0dc04e8d65b99994d3dafff';
@@ -8,15 +9,17 @@ const URL_API = [
     'https://beta.zingmp3.vn'
 ];
 
+let cookiejar = request.jar();
+
 request = request.defaults({
     qs: {
         api_key: API_KEY,
         apiKey: API_KEY
     },
     gzip: true,
-    json: true
+    json: true,
+    jar: cookiejar
 });
-
 class ZingMp3 {
 
     static getFullInfo(id){
@@ -62,7 +65,6 @@ class ZingMp3 {
 
     static getSongInfo(id) {
         return new Promise(async (resolve, reject) => {
-
             const option = {
                 nameAPI: '/song/get-song-info',
                 typeApi: 0,
@@ -93,7 +95,7 @@ class ZingMp3 {
                 },
                 param: 'id=' + id
             };
-
+            
             try {
                 const data = await this.requestZing(option);
                 if (data.err) reject(data);
@@ -104,8 +106,15 @@ class ZingMp3 {
         })
     }
 
-    static requestZing({nameAPI, typeApi, param, qs})
+    static async getCookie(){
+        if (!cookiejar._jar.store.idx['zingmp3.vn']) {
+            await Promise.all([request.get('https://zingmp3.vn/'), request.get('https://beta.zingmp3.vn')]);
+        }
+    }
+
+    static async requestZing({nameAPI, typeApi, param, qs})
     {
+        await this.getCookie();
         
         let sig = this.hashParam(nameAPI, param);
         return request({
@@ -114,7 +123,7 @@ class ZingMp3 {
                 ctime: this.time,
                 sig,
                 ...qs
-            }
+            },
         });
     }
 

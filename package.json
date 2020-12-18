@@ -9,7 +9,9 @@
   "author": "whoant <vovanhoangtuan4.2@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "node-id3": "^0.2.1",
     "request": "^2.88.2",
-    "request-promise": "^4.2.6"
+    "request-promise": "^4.2.6",
+    "tough-cookie": "^4.0.0"
   }
 }
