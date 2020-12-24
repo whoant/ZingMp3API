@@ -1,5 +1,5 @@
 let request = require("request-promise");
-const FileCookieStore = require('tough-cookie-file-store').FileCookieStore;
+const {FileCookieStore} = require('tough-cookie-file-store');
 const fs = require('fs');
 
 const encrypt = require('./encrypt');
@@ -34,6 +34,16 @@ class ZingMp3 {
         });
     }
 
+    static getSectionPlaylist(id) {
+        return this.requestZing({
+            path: '/api/v2/playlist/getSectionBottom',
+            qs: {
+                id
+            }
+        });
+
+    }
+
     static getDetailPlaylist(id) {
         return this.requestZing({
             path: '/api/v2/playlist/getDetail',
@@ -43,6 +53,7 @@ class ZingMp3 {
         });
 
     }
+
     static getInfoMusic(id) {
         return this.requestZing({
             path: '/api/v2/song/getInfo',
@@ -81,6 +92,7 @@ class ZingMp3 {
                 let param = new URLSearchParams(qs).toString();
 
                 let sig = this.hashParam(path, param);
+
                 const data = await request({
                     uri: URL_API + path,
                     qs: {
@@ -89,6 +101,7 @@ class ZingMp3 {
                         ...qs
                     },
                 });
+
                 if (data.err) reject(data);
                 resolve(data.data);
             } catch (error) {
