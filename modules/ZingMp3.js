@@ -4,10 +4,10 @@ const fs = require('fs');
 
 const encrypt = require('./encrypt');
 
+const URL_API = 'https://zingmp3.vn';
 const API_KEY = 'kI44ARvPwaqL7v0KuDSM0rGORtdY1nnw';
 const SERCRET_KEY = '882QcNXV4tUZbvAsjmFOHqNC1LpcBRKW';
-const URL_API = 'https://zingmp3.vn';
-const cookiePath = 'cookie.json';
+const cookiePath = './modules/cookie.json';
 
 if (!fs.existsSync(cookiePath)) fs.closeSync(fs.openSync(cookiePath, 'w'));
 
