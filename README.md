@@ -3,7 +3,7 @@
 ZingMp3API is a NodeJS library.
 
 # Installation
-npm i zingmp3-api
+`npm i zingmp3-api`
 
 # Usage
 
