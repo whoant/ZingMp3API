@@ -20,5 +20,9 @@
     "request": "^2.88.2",
     "request-promise": "^4.2.6",
     "tough-cookie-file-store": "^2.0.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git//github.com/whoant/ZingMp3API.git"
   }
 }

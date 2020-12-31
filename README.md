@@ -2,14 +2,20 @@
 
 ZingMp3API is a NodeJS library.
 
+# Reverse API
+[post](https://vovanhoangtuan4-2.medium.com/tôi-đã-lấy-api-zingmp3-như-thế-nào-55f5fa555eda)
+
 # Installation
-`npm i zingmp3-api`
+```bash
+npm i zingmp3-api
+```
 
 # Usage
 
 ```javascript
-const ZingMp3 = require('./modules/ZingMp3');
+const ZingMp3 = require('zingmp3-api');
 
-ZingMp3.getFullInfo("ZEFE70B9");
-
+ZingMp3.getHome(page = 1);
+ZingMp3.getFullInfo(idMusic);
+ZingMp3.getDetailPlaylist(idPlaylist);
 ```
