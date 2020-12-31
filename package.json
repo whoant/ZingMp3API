@@ -1,13 +1,20 @@
 {
   "name": "zingmp3-api",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "ZingMp3 API",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "whoant <vovanhoangtuan4.2@gmail.com>",
-  "keywords": ["ZingMp3", "zingmp3", "zing", "mp3", "api-music", "music"],
+  "keywords": [
+    "ZingMp3",
+    "zingmp3",
+    "zing",
+    "mp3",
+    "api-music",
+    "music"
+  ],
   "license": "ISC",
   "dependencies": {
     "request": "^2.88.2",
