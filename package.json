@@ -7,6 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "whoant <vovanhoangtuan4.2@gmail.com>",
+  "keywords": ["ZingMp3", "zingmp3", "zing", "mp3", "api-music", "music"],
   "license": "ISC",
   "dependencies": {
     "request": "^2.88.2",

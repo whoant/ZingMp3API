@@ -1,10 +1,6 @@
 const Zing = require('./modules/ZingMp3');
-const fs = require('fs');
 
-Zing.getSectionPlaylist('ZWZB969E')
+
+Zing.getSectionPlaylist('6Z87F988')
     .then(data => console.log(data))
     .catch(err => console.log(err))
-
-// Zing.getHome(1)
-//     .then(data => console.log(data))
-//     .catch(err => console.log(err))
