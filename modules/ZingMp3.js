@@ -1,5 +1,5 @@
-let request = require("request-promise");
-const {FileCookieStore} = require('tough-cookie-file-store');
+let request = require('request-promise');
+const { FileCookieStore } = require('tough-cookie-file-store');
 const fs = require('fs');
 
 const encrypt = require('./encrypt');
@@ -15,18 +15,20 @@ let cookiejar = request.jar(new FileCookieStore(cookiePath));
 
 request = request.defaults({
     qs: {
-        apiKey: API_KEY
+        apiKey: API_KEY,
     },
     gzip: true,
     json: true,
-    jar: cookiejar
+    jar: cookiejar,
 });
 class ZingMp3 {
-
-    static getFullInfo(id) {
+    getFullInfo(id) {
         return new Promise(async (resolve, reject) => {
             try {
-                let data = await Promise.all([this.getInfoMusic(id), this.getStreaming(id)]);
+                let data = await Promise.all([
+                    this.getInfoMusic(id),
+                    this.getStreaming(id),
+                ]);
                 resolve({ ...data[0], streaming: data[1] });
             } catch (err) {
                 reject(err);
@@ -34,58 +36,56 @@ class ZingMp3 {
         });
     }
 
-    static getSectionPlaylist(id) {
+    getSectionPlaylist(id) {
         return this.requestZing({
             path: '/api/v2/playlist/getSectionBottom',
             qs: {
-                id
-            }
+                id,
+            },
         });
-
     }
 
-    static getDetailPlaylist(id) {
+    getDetailPlaylist(id) {
         return this.requestZing({
             path: '/api/v2/playlist/getDetail',
             qs: {
-                id
-            }
+                id,
+            },
         });
-
     }
 
-    static getInfoMusic(id) {
+    getInfoMusic(id) {
         return this.requestZing({
             path: '/api/v2/song/getInfo',
             qs: {
-                id
-            }
+                id,
+            },
         });
     }
 
-    static getStreaming(id) {
+    getStreaming(id) {
         return this.requestZing({
             path: '/api/v2/song/getStreaming',
             qs: {
-                id
-            }
+                id,
+            },
         });
     }
 
-    static getHome(page = 1) {
+    getHome(page = 1) {
         return this.requestZing({
             path: '/api/v2/home',
             qs: {
-                page
-            }
+                page,
+            },
         });
     }
 
-    static async getCookie() {
+    async getCookie() {
         if (!cookiejar._jar.store.idx['zingmp3.vn']) await request.get(URL_API);
     }
 
-    static requestZing({ path, qs }) {
+    requestZing({ path, qs }) {
         return new Promise(async (resolve, reject) => {
             try {
                 await this.getCookie();
@@ -98,7 +98,7 @@ class ZingMp3 {
                     qs: {
                         ctime: this.time,
                         sig,
-                        ...qs
+                        ...qs,
                     },
                 });
 
@@ -110,11 +110,11 @@ class ZingMp3 {
         });
     }
 
-    static hashParam(path, param = '') {
+    hashParam(path, param = '') {
         this.time = Math.floor(Date.now() / 1000);
         const hash256 = encrypt.getHash256(`ctime=${this.time}${param}`);
         return encrypt.getHmac512(path + hash256, SERCRET_KEY);
     }
 }
 
-module.exports = ZingMp3;
+module.exports = new ZingMp3();
