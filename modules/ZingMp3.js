@@ -5,8 +5,8 @@ const fs = require('fs');
 const encrypt = require('./encrypt');
 
 const URL_API = 'https://zingmp3.vn';
-const API_KEY = 'kI44ARvPwaqL7v0KuDSM0rGORtdY1nnw';
-const SERCRET_KEY = '882QcNXV4tUZbvAsjmFOHqNC1LpcBRKW';
+const API_KEY = '88265e23d4284f25963e6eedac8fbfa3';
+const SECRET_KEY = '2aa2d1c561e809b267f3638c4a307aab';
 const cookiePath = 'ZingMp3.json';
 
 if (!fs.existsSync(cookiePath)) fs.closeSync(fs.openSync(cookiePath, 'w'));
@@ -14,6 +14,7 @@ if (!fs.existsSync(cookiePath)) fs.closeSync(fs.openSync(cookiePath, 'w'));
 let cookiejar = request.jar(new FileCookieStore(cookiePath));
 
 request = request.defaults({
+    baseUrl: URL_API,
     qs: {
         apiKey: API_KEY,
     },
@@ -22,6 +23,10 @@ request = request.defaults({
     jar: cookiejar,
 });
 class ZingMp3 {
+    constructor() {
+        this.time = null;
+    }
+
     getFullInfo(id) {
         return new Promise(async (resolve, reject) => {
             try {
@@ -81,24 +86,49 @@ class ZingMp3 {
         });
     }
 
+    getChartHome() {
+        return this.requestZing({
+            path: '/api/v2/chart/getHome',
+            qs: {},
+        });
+    }
+
+    getWeekChart(id) {
+        return this.requestZing({
+            path: '/api/v2/chart/getWeekChart',
+            qs: { id },
+        });
+    }
+
+    search(keyword) {
+        return this.requestZing({
+            path: '/api/v2/search/multi',
+            qs: {
+                q: keyword,
+            },
+            haveParam: 1,
+        });
+    }
+
     async getCookie() {
         if (!cookiejar._jar.store.idx['zingmp3.vn']) await request.get(URL_API);
     }
 
-    requestZing({ path, qs }) {
+    // haveParam = 1 => string hash will have suffix
+    requestZing({ path, qs, haveParam }) {
         return new Promise(async (resolve, reject) => {
             try {
                 await this.getCookie();
                 let param = new URLSearchParams(qs).toString();
 
-                let sig = this.hashParam(path, param);
+                let sig = this.hashParam(path, param, haveParam);
 
                 const data = await request({
-                    uri: URL_API + path,
+                    uri: path,
                     qs: {
+                        ...qs,
                         ctime: this.time,
                         sig,
-                        ...qs,
                     },
                 });
 
@@ -110,10 +140,12 @@ class ZingMp3 {
         });
     }
 
-    hashParam(path, param = '') {
+    hashParam(path, param = '', haveParam = 0) {
         this.time = Math.floor(Date.now() / 1000);
-        const hash256 = encrypt.getHash256(`ctime=${this.time}${param}`);
-        return encrypt.getHmac512(path + hash256, SERCRET_KEY);
+        let strHash = `ctime=${this.time}`;
+        if (haveParam === 0) strHash += param;
+        const hash256 = encrypt.getHash256(strHash);
+        return encrypt.getHmac512(path + hash256, SECRET_KEY);
     }
 }
 
