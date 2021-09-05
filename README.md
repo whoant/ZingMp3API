@@ -44,18 +44,38 @@ Example: Your keyword: Sơn Tùng MTP
 ZingMp3.search('Sơn Tùng MTP');
 ```
 
-### 5: Get Chart
+### 5: Get chart
 
 ```javascript
 ZingMp3.getChartHome();
 ```
 
-### 6: Get Chart Week
+### 6: Get chart week
 
 Example: https://zingmp3.vn/zing-chart-tuan/Bai-hat-Viet-Nam/IWZ9Z08I.html
 
 ```javascript
 ZingMp3.getWeekChart('IWZ9Z08I');
+```
+
+### 7: Get new release chart
+
+```javascript
+ZingMp3.getNewReleaseChart();
+```
+
+### 8: Get top 100
+
+```javascript
+ZingMp3.getTop100();
+```
+
+### 9. Get details artist
+
+Example: https://zingmp3.vn/sontungmtp
+
+```javascript
+ZingMp3.getDetailArtist('sontungmtp');
 ```
 
 ## Contact

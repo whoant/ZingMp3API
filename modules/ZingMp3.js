@@ -59,6 +59,16 @@ class ZingMp3 {
         });
     }
 
+    getDetailArtist(alias) {
+        return this.requestZing({
+            path: '/api/v2/artist/getDetail',
+            qs: {
+                alias,
+            },
+            haveParam: 1,
+        });
+    }
+
     getInfoMusic(id) {
         return this.requestZing({
             path: '/api/v2/song/getInfo',
@@ -89,7 +99,6 @@ class ZingMp3 {
     getChartHome() {
         return this.requestZing({
             path: '/api/v2/chart/getHome',
-            qs: {},
         });
     }
 
@@ -97,6 +106,18 @@ class ZingMp3 {
         return this.requestZing({
             path: '/api/v2/chart/getWeekChart',
             qs: { id },
+        });
+    }
+
+    getNewReleaseChart() {
+        return this.requestZing({
+            path: '/api/v2/chart/getNewReleaseChart',
+        });
+    }
+
+    getTop100() {
+        return this.requestZing({
+            path: '/api/v2/top100',
         });
     }
 
@@ -141,7 +162,8 @@ class ZingMp3 {
     }
 
     hashParam(path, param = '', haveParam = 0) {
-        this.time = Math.floor(Date.now() / 1000);
+        // this.time = Math.floor(Date.now() / 1000);
+        this.time = 1630854164;
         let strHash = `ctime=${this.time}`;
         if (haveParam === 0) strHash += param;
         const hash256 = encrypt.getHash256(strHash);
