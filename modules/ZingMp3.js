@@ -132,7 +132,7 @@ class ZingMp3 {
     }
 
     async getCookie() {
-        if (!cookiejar._jar.store.idx['zingmp3.vn']) await request.get(URL_API);
+        if (!cookiejar._jar.store.idx['zingmp3.vn']) await request.get('/');
     }
 
     // haveParam = 1 => string hash will have suffix
