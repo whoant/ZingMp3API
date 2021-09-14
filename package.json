@@ -21,8 +21,9 @@
     "request-promise": "^4.2.6",
     "tough-cookie-file-store": "^2.0.2"
   },
+  "homepage": "https://github.com/whoant/ZingMp3API#readme",
   "repository": {
     "type": "git",
-    "url": "git//github.com/whoant/ZingMp3API.git"
+    "url": "git+https://github.com/whoant/ZingMp3API.git"
   }
 }
