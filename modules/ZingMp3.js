@@ -162,8 +162,8 @@ class ZingMp3 {
     }
 
     hashParam(path, param = '', haveParam = 0) {
-        // this.time = Math.floor(Date.now() / 1000);
-        this.time = 1630854164;
+        this.time = Math.floor(Date.now() / 1000);
+
         let strHash = `ctime=${this.time}`;
         if (haveParam === 0) strHash += param;
         const hash256 = encrypt.getHash256(strHash);
