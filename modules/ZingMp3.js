@@ -7,6 +7,8 @@ const encrypt = require('./encrypt');
 const URL_API = 'https://zingmp3.vn';
 const API_KEY = '88265e23d4284f25963e6eedac8fbfa3';
 const SECRET_KEY = '2aa2d1c561e809b267f3638c4a307aab';
+const VERSION = '1.4.2';
+
 const cookiePath = 'ZingMp3.json';
 
 if (!fs.existsSync(cookiePath)) fs.closeSync(fs.openSync(cookiePath, 'w'));
@@ -52,7 +54,7 @@ class ZingMp3 {
 
     getDetailPlaylist(id) {
         return this.requestZing({
-            path: '/api/v2/playlist/getDetail',
+            path: '/api/v2/page/get/playlist',
             qs: {
                 id,
             },
@@ -61,7 +63,7 @@ class ZingMp3 {
 
     getDetailArtist(alias) {
         return this.requestZing({
-            path: '/api/v2/artist/getDetail',
+            path: '/api/v2/page/get/artist',
             qs: {
                 alias,
             },
@@ -71,7 +73,7 @@ class ZingMp3 {
 
     getInfoMusic(id) {
         return this.requestZing({
-            path: '/api/v2/song/getInfo',
+            path: '/api/v2/song/get/info',
             qs: {
                 id,
             },
@@ -80,7 +82,7 @@ class ZingMp3 {
 
     getStreaming(id) {
         return this.requestZing({
-            path: '/api/v2/song/getStreaming',
+            path: '/api/v2/song/get/streaming',
             qs: {
                 id,
             },
@@ -89,7 +91,7 @@ class ZingMp3 {
 
     getHome(page = 1) {
         return this.requestZing({
-            path: '/api/v2/home',
+            path: '/api/v2/page/get/home',
             qs: {
                 page,
             },
@@ -98,26 +100,26 @@ class ZingMp3 {
 
     getChartHome() {
         return this.requestZing({
-            path: '/api/v2/chart/getHome',
+            path: '/api/v2/page/get/chart-home',
         });
     }
 
     getWeekChart(id) {
         return this.requestZing({
-            path: '/api/v2/chart/getWeekChart',
+            path: '/api/v2/page/get/week-chart',
             qs: { id },
         });
     }
 
     getNewReleaseChart() {
         return this.requestZing({
-            path: '/api/v2/chart/getNewReleaseChart',
+            path: '/api/v2/page/get/newrelease-chart',
         });
     }
 
     getTop100() {
         return this.requestZing({
-            path: '/api/v2/top100',
+            path: '/api/v2/page/get/top-100',
         });
     }
 
@@ -163,6 +165,7 @@ class ZingMp3 {
 
     hashParam(path, param = '', haveParam = 0) {
         this.time = Math.floor(Date.now() / 1000);
+        // this.time = '1634406003';
 
         let strHash = `ctime=${this.time}`;
         if (haveParam === 0) strHash += param;
