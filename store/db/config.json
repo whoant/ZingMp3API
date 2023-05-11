@@ -1,0 +1,1 @@
+{"max_datafile_size":1048576,"max_key_size":64,"max_value_size":65536,"sync":false,"autorecovery":false,"db_version":1,"DirFileModeBeforeUmask":448,"FileFileModeBeforeUmask":384}
