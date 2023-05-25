@@ -32,7 +32,7 @@ func newDataHandler(prices []DataPoint) *DataHandler {
 func PricesFromCSV(csvFilePath string) (*DataHandler, error) {
 	csvFile, err := os.Open(csvFilePath)
 	if err != nil {
-		return nil, fmt.Errorf("cannot open file : %v", err)
+		return nil, fmt.Errorf("cannot OpenPrice file : %v", err)
 	}
 	reader := csv.NewReader(bufio.NewReader(csvFile))
 
@@ -40,7 +40,7 @@ func PricesFromCSV(csvFilePath string) (*DataHandler, error) {
 	if line, err := reader.Read(); err != nil || !isCSVHeaderValid(line) {
 		log.Println(isCSVHeaderValid(line))
 		return nil, fmt.Errorf(`error reading header with columns in the csv.
-				Make sure the CSV has the columns Timestamp, Open, High, Low, Close`)
+				Make sure the CSV has the columns Timestamp, OpenPrice, HighPrice, LowPrice, ClosePrice`)
 	}
 
 	var prices []DataPoint
@@ -65,11 +65,11 @@ func PricesFromCSV(csvFilePath string) (*DataHandler, error) {
 		}
 
 		prices = append(prices, DataPoint{
-			timestamp: floatToTime(numbers[0]),
-			open:      numbers[1],
-			high:      numbers[2],
-			low:       numbers[3],
-			close:     numbers[4],
+			Time:  floatToTime(numbers[0]),
+			Open:  numbers[1],
+			High:  numbers[2],
+			Low:   numbers[3],
+			Close: numbers[4],
 		})
 	}
 

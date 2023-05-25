@@ -34,10 +34,10 @@ func (bt *BackTest) Run() {
 	exchangeHandler := NewExchangeHandler(0)
 
 	for _, price := range bt.DataHandler.Prices {
-		if exchangeHandler.CountOpenOrder() > 0 {
+		if exchangeHandler.CountOpenOrder() == 0 {
 			for _, currentOrder := range exchangeHandler.HistoryOrders {
 				// check cancel
-				if currentOrder.IsEnable() && currentOrder.CancelOrderPrice >= price.Low() && currentOrder.CancelOrderPrice <= price.High() {
+				if currentOrder.IsEnable() && currentOrder.CancelOrderPrice >= price.LowPrice() && currentOrder.CancelOrderPrice <= price.HighPrice() {
 					currentOrder.MarkCancel(price.Timestamp())
 					if currentOrder.OrderType == ASK {
 						// Cancel ASK order => increase ETH base amount
@@ -49,7 +49,7 @@ func (bt *BackTest) Run() {
 				}
 
 				// check take profit
-				if currentOrder.IsEnable() && currentOrder.TakeProfitPrice >= price.Low() && currentOrder.TakeProfitPrice <= price.High() {
+				if currentOrder.IsEnable() && currentOrder.TakeProfitPrice >= price.LowPrice() && currentOrder.TakeProfitPrice <= price.HighPrice() {
 					currentOrder.MarkMatched(price.Timestamp())
 					if currentOrder.OrderType == ASK {
 						// Sell ETH success => increase USDT quote amount
@@ -74,16 +74,16 @@ func (bt *BackTest) Run() {
 		// sell_order ETH => ETH decrease -= 10
 		if openingOrder.OrderType == ASK && amountPerBaseOrder <= bt.BackTestOptions.CurrentBaseAmount {
 			bt.BackTestOptions.CurrentBaseAmount -= amountPerBaseOrder
-			newOrder := NewOrder(openingOrder, amountPerBaseOrder, price.Open(), price.Timestamp())
+			newOrder := NewOrder(openingOrder, amountPerBaseOrder, price.OpenPrice(), price.Timestamp())
 
 			exchangeHandler.HistoryOrders = append(exchangeHandler.HistoryOrders, newOrder)
 		}
 
 		// buy_order ETH => USDT decrease -= 10 * 10000
-		totalAmountCanBeBuy := amountPerBaseOrder * price.Open()
+		totalAmountCanBeBuy := amountPerBaseOrder * price.OpenPrice()
 		if openingOrder.OrderType == BID && totalAmountCanBeBuy <= bt.BackTestOptions.CurrentQuoteAmount {
 			bt.BackTestOptions.CurrentQuoteAmount -= totalAmountCanBeBuy
-			newOrder := NewOrder(openingOrder, amountPerBaseOrder, price.Open(), price.Timestamp())
+			newOrder := NewOrder(openingOrder, amountPerBaseOrder, price.OpenPrice(), price.Timestamp())
 
 			exchangeHandler.HistoryOrders = append(exchangeHandler.HistoryOrders, newOrder)
 		}
@@ -101,8 +101,8 @@ func (bt *BackTest) Portfolio() {
 	coins := strings.Split(options.Pair, "/")
 	baseCoin, quoteCoin := coins[0], coins[1]
 
-	initialSumAmount := options.InitialBaseAmount*bt.DataHandler.Prices[0].Open() + options.InitialQuoteAmount
-	currentSumAmount := options.CurrentBaseAmount*bt.DataHandler.Prices[len(bt.DataHandler.Prices)-1].Open() + options.CurrentQuoteAmount
+	initialSumAmount := options.InitialBaseAmount*bt.DataHandler.Prices[0].OpenPrice() + options.InitialQuoteAmount
+	currentSumAmount := options.CurrentBaseAmount*bt.DataHandler.Prices[len(bt.DataHandler.Prices)-1].OpenPrice() + options.CurrentQuoteAmount
 
 	profit := currentSumAmount - initialSumAmount
 	profitMargin := profit / initialSumAmount * 100
@@ -127,6 +127,9 @@ func (bt *BackTest) Portfolio() {
 		ProfitMargin:       profitMargin,
 		Cagr:               cagr,
 		Orders:             bt.order,
+		CreatedAt:          time.Now(),
+		Strategy:           bt.myStrategy.Naming(),
+		Prices:             bt.DataHandler.Prices,
 	}
 
 	res, _ := json.Marshal(portfolio)

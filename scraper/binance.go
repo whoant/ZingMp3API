@@ -90,7 +90,7 @@ func time2Int64(time time.Time) int64 {
 func structToCsv(data []OHLCT, headers []string, filename string) error {
 	var rows [][]string
 
-	// Open the file for writing.
+	// OpenPrice the file for writing.
 	file, err := os.Create(filename)
 	if err != nil {
 		return err

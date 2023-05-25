@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
 	"github.com/rs/zerolog/log"
@@ -36,7 +37,7 @@ func main() {
 	redisWrapper := redis_wrapper.NewRedisWrapper(redisClient, context.Background())
 
 	r := gin.Default()
-
+	r.Use(cors.Default())
 	r.GET("/get-all-data", func(c *gin.Context) {
 		ctx := c.Copy()
 		keys, err := redisWrapper.Client.Keys(ctx, "data:version:*").Result()
@@ -97,7 +98,6 @@ func main() {
 		var portfolio backtest.Portfolio
 		err = json.Unmarshal([]byte(fmt.Sprintf("%v", val)), &portfolio)
 		if err != nil {
-			log.Error().Err(err).Msg("111")
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"error": err,
 			})

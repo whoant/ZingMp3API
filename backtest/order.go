@@ -80,12 +80,6 @@ type Order struct {
 	CancelOrderPrice float64    `json:"cancelOrderPrice"`
 }
 
-type OpeningOrder struct {
-	OrderType        OrderType
-	TakeProfitPrice  float64
-	CancelOrderPrice float64
-}
-
 func NewOrder(openingOrder *OpeningOrder, amount float64, openPrice float64, openedAt time.Time) *Order {
 	return &Order{
 		OpenedAt:         openedAt,

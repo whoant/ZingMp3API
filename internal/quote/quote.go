@@ -593,7 +593,7 @@ func NewQuoteFromYahoo(symbol, startDate, endDate string, period Period, adjustQ
 		Log.Printf("symbol '%s' not found\n", symbol)
 		return NewQuote("", 0), err
 	}
-	defer resp.Body.Close()
+	defer resp.Body.ClosePrice()
 
 	var csvdata [][]string
 	reader := csv.NewReader(resp.Body)
@@ -626,10 +626,10 @@ func NewQuoteFromYahoo(symbol, startDate, endDate string, period Period, adjustQ
 		// Append to quote
 		bar := numrows - row // reverse the order
 		quote.Date[bar] = d
-		quote.Open[bar] = o * factor
-		quote.High[bar] = h * factor
-		quote.Low[bar] = l * factor
-		quote.Close[bar] = c * factor
+		quote.OpenPrice[bar] = o * factor
+		quote.HighPrice[bar] = h * factor
+		quote.LowPrice[bar] = l * factor
+		quote.ClosePrice[bar] = c * factor
 		quote.Volume[bar] = v
 
 	}
@@ -1254,10 +1254,10 @@ func NewQuoteFromBinance(symbol string, startDate, endDate string, period Period
 
 		/*
 			0       OpenTime                 int64
-			1 			Open                     float64
-			2 			High                     float64
-			3		 	Low                      float64
-			4 			Close                    float64
+			1 			OpenPrice                     float64
+			2 			HighPrice                     float64
+			3		 	LowPrice                      float64
+			4 			ClosePrice                    float64
 			5 			Volume                   float64
 			6 			CloseTime                int64
 			7 			QuoteAssetVolume         float64

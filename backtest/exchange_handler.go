@@ -15,7 +15,7 @@ func NewExchangeHandler(fee float64) *ExchangeHandler {
 func (handler *ExchangeHandler) CountOpenOrder() int {
 	count := 0
 	for _, order := range handler.HistoryOrders {
-		if order.OrderType == BID || order.OrderType == ASK {
+		if order.State == ENABLED {
 			count++
 		}
 	}
@@ -29,7 +29,7 @@ func (handler *ExchangeHandler) MatchingOrder(price DataPoint) {
 			continue
 		}
 
-		if currentOrder.TakeProfitPrice >= price.Low() && currentOrder.TakeProfitPrice <= price.High() {
+		if currentOrder.TakeProfitPrice >= price.LowPrice() && currentOrder.TakeProfitPrice <= price.HighPrice() {
 			currentOrder.MarkMatched(price.Timestamp())
 		}
 	}
@@ -41,7 +41,7 @@ func (handler *ExchangeHandler) CancelOrder(price DataPoint) {
 			continue
 		}
 
-		if currentOrder.CancelOrderPrice >= price.Low() && currentOrder.CancelOrderPrice <= price.High() {
+		if currentOrder.CancelOrderPrice >= price.LowPrice() && currentOrder.CancelOrderPrice <= price.HighPrice() {
 			currentOrder.MarkCancel(price.Timestamp())
 		}
 	}
