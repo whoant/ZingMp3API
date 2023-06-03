@@ -134,8 +134,6 @@ func (bt *BackTest) Portfolio() {
 
 	res, _ := json.Marshal(portfolio)
 
-	log.Print(string(res))
-
 	log.Info().Str("type", "portfolio").Str("pair", options.Pair).
 		Str("base_coin", baseCoin).
 		Str("quote_coin", quoteCoin).

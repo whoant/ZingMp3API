@@ -1,44 +1,21 @@
 package main
 
 import (
+	movingaverage "github.com/RobinUS2/golang-moving-average"
 	"github.com/rs/zerolog/log"
+	strategy2 "new-back-testing/cmd/strategy"
 
 	backtest2 "new-back-testing/backtest"
 )
 
-type myStrategy struct {
-	step int
-}
-
-func (m *myStrategy) Naming() string {
-	return "Market marker"
-}
-
-func (m *myStrategy) OpenNewOrder(price backtest2.DataPoint) *backtest2.OpeningOrder {
-	m.step++
-	if m.step%2 == 0 {
-		return &backtest2.OpeningOrder{
-			OrderType:        backtest2.ASK,
-			TakeProfitPrice:  price.OpenPrice() + (price.OpenPrice() * 0.01),
-			CancelOrderPrice: price.OpenPrice() - (price.OpenPrice() * 0.1),
-		}
-	} else {
-		return &backtest2.OpeningOrder{
-			OrderType:        backtest2.BID,
-			TakeProfitPrice:  price.OpenPrice() + (price.OpenPrice() * 0.01),
-			CancelOrderPrice: price.OpenPrice() - (price.OpenPrice() * 0.1),
-		}
-	}
-
-}
-
 func main() {
-	dataHandler, err := backtest2.PricesFromCSV("./BTCUSDT|1m|07-04-2023 00:00|11-04-2023 00:00.csv")
+	dataHandler, err := backtest2.PricesFromCSV("./BTCUSDT|1m|21-05-2023 00:00|23-05-2023 00:00.csv")
 	if err != nil {
 		log.Fatal().Err(err).Msg("cannot load data")
 	}
 
-	strategy := &myStrategy{step: 0}
+	//strategy := &strategy2.AvellanedaMarketMakingStrategy{Step: 0}
+	strategy := &strategy2.ArbitrageStrategy{Sma: movingaverage.New(100)}
 
 	backTestOptions := backtest2.NewBacktestOptions("BTC/USDT", 10, 100, 100)
 
