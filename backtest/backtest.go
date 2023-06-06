@@ -34,7 +34,7 @@ func (bt *BackTest) Run() {
 	exchangeHandler := NewExchangeHandler(0)
 
 	for _, price := range bt.DataHandler.Prices {
-		if exchangeHandler.CountOpenOrder() == 0 {
+		if exchangeHandler.CountEnabledOrder() != 0 {
 			for _, currentOrder := range exchangeHandler.HistoryOrders {
 				// check cancel
 				if currentOrder.IsEnable() && currentOrder.CancelOrderPrice >= price.LowPrice() && currentOrder.CancelOrderPrice <= price.HighPrice() {
@@ -72,17 +72,18 @@ func (bt *BackTest) Run() {
 		amountPerBaseOrder := bt.BackTestOptions.AmountPerOrder
 
 		// sell_order ETH => ETH decrease -= 10
-		if openingOrder.OrderType == ASK && amountPerBaseOrder <= bt.BackTestOptions.CurrentBaseAmount {
-			bt.BackTestOptions.CurrentBaseAmount -= amountPerBaseOrder
-			newOrder := NewOrder(openingOrder, amountPerBaseOrder, price.OpenPrice(), price.Timestamp())
+		amountCanSell := amountPerBaseOrder / price.OpenPrice()
+		if openingOrder.OrderType == ASK && amountCanSell <= bt.BackTestOptions.CurrentBaseAmount {
+			bt.BackTestOptions.CurrentBaseAmount -= amountCanSell
+			newOrder := NewOrder(openingOrder, amountCanSell, price.OpenPrice(), price.Timestamp())
 
 			exchangeHandler.HistoryOrders = append(exchangeHandler.HistoryOrders, newOrder)
 		}
 
 		// buy_order ETH => USDT decrease -= 10 * 10000
-		totalAmountCanBeBuy := amountPerBaseOrder * price.OpenPrice()
-		if openingOrder.OrderType == BID && totalAmountCanBeBuy <= bt.BackTestOptions.CurrentQuoteAmount {
-			bt.BackTestOptions.CurrentQuoteAmount -= totalAmountCanBeBuy
+		//totalAmountCanBeBuy := amountPerBaseOrder * price.OpenPrice()
+		if openingOrder.OrderType == BID && amountPerBaseOrder <= bt.BackTestOptions.CurrentQuoteAmount {
+			bt.BackTestOptions.CurrentQuoteAmount -= amountPerBaseOrder
 			newOrder := NewOrder(openingOrder, amountPerBaseOrder, price.OpenPrice(), price.Timestamp())
 
 			exchangeHandler.HistoryOrders = append(exchangeHandler.HistoryOrders, newOrder)
@@ -132,7 +133,10 @@ func (bt *BackTest) Portfolio() {
 		Prices:             bt.DataHandler.Prices,
 	}
 
-	res, _ := json.Marshal(portfolio)
+	res, err := json.Marshal(portfolio)
+	if err != nil {
+		log.Fatal().Err(err).Msg("cannot marshal portfolio")
+	}
 
 	log.Info().Str("type", "portfolio").Str("pair", options.Pair).
 		Str("base_coin", baseCoin).

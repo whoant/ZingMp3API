@@ -19,13 +19,13 @@ func (m *AvellanedaMarketMakingStrategy) OpenNewOrder(price backtest2.DataPoint)
 	if m.Step%2 == 0 {
 		return &backtest2.OpeningOrder{
 			OrderType:        backtest2.ASK,
-			TakeProfitPrice:  price.OpenPrice() + (price.OpenPrice() * 0.01),
+			TakeProfitPrice:  price.OpenPrice() + 10,
 			CancelOrderPrice: price.OpenPrice() - (price.OpenPrice() * 0.1),
 		}
 	} else {
 		return &backtest2.OpeningOrder{
 			OrderType:        backtest2.BID,
-			TakeProfitPrice:  price.OpenPrice() - (price.OpenPrice() * 0.01),
+			TakeProfitPrice:  price.OpenPrice() - 10,
 			CancelOrderPrice: price.OpenPrice() + (price.OpenPrice() * 0.1),
 		}
 	}

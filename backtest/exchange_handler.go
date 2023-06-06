@@ -12,7 +12,7 @@ func NewExchangeHandler(fee float64) *ExchangeHandler {
 	}
 }
 
-func (handler *ExchangeHandler) CountOpenOrder() int {
+func (handler *ExchangeHandler) CountEnabledOrder() int {
 	count := 0
 	for _, order := range handler.HistoryOrders {
 		if order.State == ENABLED {
