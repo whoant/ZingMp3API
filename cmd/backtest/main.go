@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	dataHandler, err := backtest2.PricesFromCSV("./BTCUSDT|1h|21-05-2023 00:00|23-05-2023 00:00.csv")
+	dataHandler, err := backtest2.PricesFromCSV("./BTCUSDT|1h|01-06-2023 00:00|03-06-2023 00:00.csv")
 	if err != nil {
 		log.Fatal().Err(err).Msg("cannot load data")
 	}

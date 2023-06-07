@@ -56,7 +56,7 @@ func (bt *BackTest) Run() {
 						bt.BackTestOptions.CurrentQuoteAmount += currentOrder.Amount * currentOrder.OpenPrice
 					} else {
 						// Buy ETH success => increase ETH base amount
-						bt.BackTestOptions.CurrentBaseAmount += currentOrder.Amount
+						bt.BackTestOptions.CurrentBaseAmount += currentOrder.Amount / currentOrder.OpenPrice
 					}
 				}
 			}
