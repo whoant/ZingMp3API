@@ -14,5 +14,5 @@ type OHLCT struct {
 
 type Scraper interface {
 	GetData(from time.Time, to time.Time, interval string, symbol string) []OHLCT
-	Download(from time.Time, to time.Time, interval string, symbol string)
+	Download(from time.Time, to time.Time, interval string, symbol string) string
 }

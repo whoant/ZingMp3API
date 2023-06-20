@@ -8,13 +8,12 @@ import (
 )
 
 func main() {
-	dataHandler, err := backtest2.PricesFromCSV("./BTCUSDT|1h|01-06-2023 00:00|03-06-2023 00:00.csv")
+	dataHandler, err := backtest2.PricesFromCSV("./BTCUSDT|1h|01-06-2023 00:00|10-06-2023 00:00.csv")
 	if err != nil {
 		log.Fatal().Err(err).Msg("cannot load data")
 	}
 
 	strategy := &strategy2.AvellanedaMarketMakingStrategy{Step: 0}
-	//strategy := &strategy2.ArbitrageStrategy{Sma: movingaverage.New(100)}
 
 	backTestOptions := backtest2.NewBacktestOptions("BTC/USDT", 10, 100000, 100)
 

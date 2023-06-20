@@ -13,22 +13,18 @@ import (
 	"time"
 )
 
-// DataHandler is a wrapper that packages the required data for running back testing simulation.
 type DataHandler struct {
 	Prices []DataPoint
 }
 
-// Required columns in the CSV file
 var csvColumns = []string{"timestamp", "open", "high", "low", "close"}
 
-// newDataHandler creates and initializes a DataHandler with pricing data and executes the required setup
 func newDataHandler(prices []DataPoint) *DataHandler {
 	return &DataHandler{
 		Prices: prices,
 	}
 }
 
-// PricesFromCSV reads all csv data in the OHLCV format to the DataHandler and returns if a error occurred
 func PricesFromCSV(csvFilePath string) (*DataHandler, error) {
 	csvFile, err := os.Open(csvFilePath)
 	if err != nil {
@@ -36,7 +32,6 @@ func PricesFromCSV(csvFilePath string) (*DataHandler, error) {
 	}
 	reader := csv.NewReader(bufio.NewReader(csvFile))
 
-	//Reading first line header and validating the required columns
 	if line, err := reader.Read(); err != nil || !isCSVHeaderValid(line) {
 		log.Println(isCSVHeaderValid(line))
 		return nil, fmt.Errorf(`error reading header with columns in the csv.
@@ -52,9 +47,7 @@ func PricesFromCSV(csvFilePath string) (*DataHandler, error) {
 			log.Fatal(err)
 		}
 
-		//Checking each OHLCV value in the csv
 		var numbers [5]float64
-
 		for i := 0; i < len(numbers); i++ {
 			value, err := strToFloat(line[i])
 			if err != nil {

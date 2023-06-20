@@ -32,30 +32,23 @@ func NewBackTest(myStrategy Strategy, handler *DataHandler, options *BacktestOpt
 
 func (bt *BackTest) Run() {
 	exchangeHandler := NewExchangeHandler(0)
-
 	for _, price := range bt.DataHandler.Prices {
 		if exchangeHandler.CountEnabledOrder() != 0 {
 			for _, currentOrder := range exchangeHandler.HistoryOrders {
-				// check cancel
 				if currentOrder.IsEnable() && currentOrder.CancelOrderPrice >= price.LowPrice() && currentOrder.CancelOrderPrice <= price.HighPrice() {
 					currentOrder.MarkCancel(price.Timestamp())
 					if currentOrder.OrderType == ASK {
-						// Cancel ASK order => increase ETH base amount
 						bt.BackTestOptions.CurrentBaseAmount += currentOrder.Amount
 					} else {
-						// Cancel BID order => increase USDT qoute amount
 						bt.BackTestOptions.CurrentQuoteAmount += currentOrder.Amount * currentOrder.OpenPrice
 					}
 				}
 
-				// check take profit
 				if currentOrder.IsEnable() && currentOrder.TakeProfitPrice >= price.LowPrice() && currentOrder.TakeProfitPrice <= price.HighPrice() {
 					currentOrder.MarkMatched(price.Timestamp())
 					if currentOrder.OrderType == ASK {
-						// Sell ETH success => increase USDT quote amount
 						bt.BackTestOptions.CurrentQuoteAmount += currentOrder.Amount * currentOrder.OpenPrice
 					} else {
-						// Buy ETH success => increase ETH base amount
 						bt.BackTestOptions.CurrentBaseAmount += currentOrder.Amount / currentOrder.OpenPrice
 					}
 				}
@@ -67,11 +60,7 @@ func (bt *BackTest) Run() {
 			continue
 		}
 
-		// base: ETH
-		// quote: USDT
 		amountPerBaseOrder := bt.BackTestOptions.AmountPerOrder
-
-		// sell_order ETH => ETH decrease -= 10
 		amountCanSell := amountPerBaseOrder / price.OpenPrice()
 		if openingOrder.OrderType == ASK && amountCanSell <= bt.BackTestOptions.CurrentBaseAmount {
 			bt.BackTestOptions.CurrentBaseAmount -= amountCanSell
@@ -79,9 +68,6 @@ func (bt *BackTest) Run() {
 
 			exchangeHandler.HistoryOrders = append(exchangeHandler.HistoryOrders, newOrder)
 		}
-
-		// buy_order ETH => USDT decrease -= 10 * 10000
-		//totalAmountCanBeBuy := amountPerBaseOrder * price.OpenPrice()
 		if openingOrder.OrderType == BID && amountPerBaseOrder <= bt.BackTestOptions.CurrentQuoteAmount {
 			bt.BackTestOptions.CurrentQuoteAmount -= amountPerBaseOrder
 			newOrder := NewOrder(openingOrder, amountPerBaseOrder, price.OpenPrice(), price.Timestamp())
@@ -89,12 +75,7 @@ func (bt *BackTest) Run() {
 			exchangeHandler.HistoryOrders = append(exchangeHandler.HistoryOrders, newOrder)
 		}
 	}
-
 	bt.order = exchangeHandler.HistoryOrders
-
-	for _, order := range exchangeHandler.HistoryOrders {
-		order.Log()
-	}
 }
 
 func (bt *BackTest) Portfolio() {
@@ -103,15 +84,19 @@ func (bt *BackTest) Portfolio() {
 	baseCoin, quoteCoin := coins[0], coins[1]
 
 	initialSumAmount := options.InitialBaseAmount*bt.DataHandler.Prices[0].OpenPrice() + options.InitialQuoteAmount
-	currentSumAmount := options.CurrentBaseAmount*bt.DataHandler.Prices[len(bt.DataHandler.Prices)-1].OpenPrice() + options.CurrentQuoteAmount
+	currentSumAmount := options.CurrentBaseAmount*bt.DataHandler.Prices[0].OpenPrice() + options.CurrentQuoteAmount
 
 	profit := currentSumAmount - initialSumAmount
 	profitMargin := profit / initialSumAmount * 100
 
+	l := len(bt.DataHandler.Prices)
 	startDate := bt.DataHandler.Prices[0].Timestamp()
-	endDate := bt.DataHandler.Prices[len(bt.DataHandler.Prices)-1].Timestamp()
+	endDate := bt.DataHandler.Prices[l-1].Timestamp()
 
 	cagr := calculateCAGR(startDate, endDate, initialSumAmount, currentSumAmount)
+
+	duration := bt.DataHandler.Prices[l-1].Timestamp().Sub(bt.DataHandler.Prices[l-2].Timestamp())
+	minutes := duration.Minutes()
 
 	portfolio := &Portfolio{
 		Pair:               options.Pair,
@@ -131,6 +116,9 @@ func (bt *BackTest) Portfolio() {
 		CreatedAt:          time.Now(),
 		Strategy:           bt.myStrategy.Naming(),
 		Prices:             bt.DataHandler.Prices,
+		Interval:           minute2Interval(int(minutes)),
+		From:               startDate,
+		To:                 endDate,
 	}
 
 	res, err := json.Marshal(portfolio)
@@ -206,4 +194,21 @@ func replaceNonAlphabeticCharacterToDash(str string) string {
 			return '-'
 		}
 	}, strings.ToLower(str))
+}
+
+func minute2Interval(m int) string {
+	interval := map[int]string{
+		1:   "1m",
+		2:   "2m",
+		3:   "3m",
+		5:   "5m",
+		60:  "1h",
+		120: "2h",
+	}
+
+	if val, ok := interval[m]; ok {
+		return val
+	}
+
+	return fmt.Sprintf("%vm", m)
 }

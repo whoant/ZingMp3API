@@ -37,8 +37,8 @@ func main() {
 
 	fromTime, _ := time.Parse("02/01/2006", from)
 	toTime, _ := time.Parse("02/01/2006", to)
-	s.Download(fromTime, toTime, interval, strings.Join(strings.Split(symbol, "/"), ""))
-	log.Info().Msg("Download successful")
+	fileName := s.Download(fromTime, toTime, interval, strings.Join(strings.Split(symbol, "/"), ""))
+	log.Info().Msgf("Download successful !! Save file : %v", fileName)
 }
 
 func validFrom(t string) {

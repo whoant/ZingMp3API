@@ -22,4 +22,7 @@ type Portfolio struct {
 	CreatedAt          time.Time   `json:"createdAt"`
 	Strategy           string      `json:"strategy"`
 	Prices             []DataPoint `json:"prices"`
+	Interval           string      `json:"interval"`
+	From               time.Time   `json:"from"`
+	To                 time.Time   `json:"to"`
 }

@@ -44,11 +44,32 @@ func (scraper *BinanceScraper) GetData(from time.Time, to time.Time, interval st
 	return result
 }
 
-func (scraper *BinanceScraper) Download(from time.Time, to time.Time, interval string, symbol string) {
+func (scraper *BinanceScraper) Download(from time.Time, to time.Time, interval string, symbol string) string {
 	data := scraper.GetData(from, to, interval, symbol)
 	headers := []string{"timestamp", "open", "high", "low", "close"}
 	filename := fmt.Sprintf("%v|%v|%v|%v.csv", symbol, interval, from.Format(FormatFullTime), to.Format(FormatFullTime))
+	data = reduceData(data, from, to)
 	structToCsv(data, headers, filename)
+
+	return filename
+}
+
+func reduceData(data []OHLCT, from time.Time, to time.Time) []OHLCT {
+	newData := make([]OHLCT, 0)
+	for _, ohlct := range data {
+		currentTime := ohlct.Timestamp
+		if currentTime.After(from.Add(-1*time.Second)) && currentTime.Before(to.Add(1*time.Second)) {
+			newData = append(newData, OHLCT{
+				Open:      ohlct.Open,
+				Close:     ohlct.Close,
+				High:      ohlct.High,
+				Low:       ohlct.Low,
+				Timestamp: currentTime,
+			})
+		}
+	}
+
+	return newData
 }
 
 func (scraper *BinanceScraper) getKLine(endTime time.Time, interval string, symbol string) ([]OHLCT, error) {
